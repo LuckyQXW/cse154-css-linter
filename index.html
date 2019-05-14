@@ -1,0 +1,35 @@
+<!DOCTYPE html>
+<!--
+     Name: Wen Qiu
+     Date: May 17, 2019
+     Section: CSE 154 AJ
+     This is the index.html page for the CSS Lint.
+-->
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <link rel="stylesheet" href="style.css" />
+    <script src="main.js"></script>
+    <title>CSE 154 CSS Lint</title>
+  </head>
+  <body>
+    <h1>CSE 154 CSS Lint (Beta Test)</h1>
+    <div id="random-tips-area">
+      <!-- To be populated with a random section from the CSS Code Quality Guide -->
+      <p>Click the button to get a random CSS style tip!</p>
+      <button id="get-tip">Next CSS Code Quality Tip</button>
+    </div>
+    <div id="editor-area">
+      <!-- Accepts user copy of CSS code-->
+      <form id="input">
+        <textarea id="editor" name="editor" rows="25" cols="100"
+          placeholder="Copy and paste your CSS code here..." required></textarea>
+        <br />
+        <button id="submit" disabled>Check my CSS!</button>
+      </form>
+      <div id="output-area">
+      </div>
+    </div>
+
+  </body>
+</html>
