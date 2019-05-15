@@ -2,12 +2,13 @@
   header("Content-type: application/json");
 
   // Defines the regex patterns used for validation
-  const SELECTOR = "/( )*(.)+( )*{/";
+  const SELECTOR = "/(\S)+( )*{/";
   const RULE_SET_CLOSE = "/( )*}/";
-  const RULE = "/( )*(.)+:( )*(.)*/";
-  const SELECTOR_STRICT = "/([a-zA-Z])+ {/";
-  const COLON_SPACE_AFTER = "/: (?! )/";
-  const NO_COLON_SPACE_BEFORE = "/([a-zA-Z]):/";
+  const RULE = "/( )*(\S)+:( )*(\S)*/";
+  const SELECTOR_STRICT = "/^\S+((\S {1}\S)*(\S))* {/";
+  const RULE_SPACING = "/^ {2}(\S)+(?<! ): (?! )(.)+/";
+  const END_WITH_SEMICOLON = "/(?<!;);( )*(?!.)/";
+  const RULE_SET_CLOSE_STRICT = "/^}( )*$/";
 
   if(isset($_GET["content"])) {
     if($_GET["content"] === "randomtips") {
@@ -71,22 +72,26 @@
           array_push($spacing_error, selector_spacing_error($lines[$i], $i));
         }
         if($lines[$i + 1] === "") {
-          array_push($spacing_error, extra_new_line_error($lines[$i], $i));
+          array_push($spacing_error, extra_newline_error($lines[$i], $i));
         }
       } else if($start_of_css && preg_match_all(RULE, $lines[$i])) {
-        if(!(preg_match_all(COLON_SPACE_AFTER, $lines[$i])
-        && preg_match_all(NO_COLON_SPACE_BEFORE, $lines[$i]))) {
+        if(!preg_match_all(RULE_SPACING, $lines[$i])) {
           array_push($spacing_error, colon_spacing_error($lines[$i], $i));
         }
-        if(!strpos($lines[$i], ";")) {
-          array_push($spacing_error, missing_semicolon_error($lines[$i], $i));
+        if(!(preg_match_all(END_WITH_SEMICOLON, $lines[$i]))) {
+          array_push($spacing_error, semicolon_error($lines[$i], $i));
         }
         if($lines[$i + 1] === "") {
-          array_push($spacing_error, extra_new_line_error($lines[$i], $i));
+          array_push($spacing_error, extra_newline_error($lines[$i], $i));
         }
       } else if(preg_match_all(RULE_SET_CLOSE, $lines[$i])) {
-        if($i !== count($lines) - 1 && $lines[$i + 1] != "") {
-          array_push($spacing_error, missing_new_line_error($lines[$i], $i));
+        if(!preg_match(RULE_SET_CLOSE_STRICT, $lines[$i])) {
+          array_push($spacing_error, rule_set_close_error($lines[$i], $i));
+        }
+        if($i < count($lines) - 1 && $lines[$i + 1] != "") {
+          array_push($spacing_error, missing_newline_error($lines[$i], $i));
+        } else if($i < count($lines) - 2 && $lines[$i + 2] == "") {
+          array_push($spacing_error, extra_newline_between_sets_error($lines[$i], $i));
         }
       }
     }
@@ -101,8 +106,8 @@
    */
   function selector_spacing_error($line, $index) {
     return spacing_error($index,
-                         "selector spacing error",
-                         "line {$index}: wrong spacing between selector and open bracket",
+                         "spacing error",
+                         "line {$index}: wrong spacing around selector",
                          $line);
   }
 
@@ -114,8 +119,8 @@
    */
   function colon_spacing_error($line, $index) {
     return spacing_error($index,
-                         "rule colon spacing error",
-                         "line {$index}: wrong spacing around colons in rule",
+                         "spacing error",
+                         "line {$index}: wrong leading space or spacing around colons",
                          $line);
   }
 
@@ -125,10 +130,10 @@
    * @param  [int] $index - the line number
    * @return [array] - an associative array describing the colon spacing error
    */
-  function missing_semicolon_error($line, $index) {
+  function semicolon_error($line, $index) {
     return spacing_error($index,
-                         "missing semicolon error",
-                         "line {$index}: missing semicolon in rule",
+                         "semicolon error",
+                         "line {$index}: rule does not end with semicolon",
                          $line);
   }
 
@@ -138,9 +143,9 @@
    * @param  [int] $index - the line number
    * @return [array] - an associative array describing the missing new line error
    */
-  function missing_new_line_error($line, $index) {
+  function missing_newline_error($line, $index) {
     return spacing_error($index,
-                         "missing newline error",
+                         "spacing error",
                          "line {$index}: missing a new line between rule sets",
                          $line);
   }
@@ -151,10 +156,37 @@
    * @param  [int] $index - the line number
    * @return [array] - an associative array describing the extra new line error
    */
-  function extra_new_line_error($line, $index) {
+  function extra_newline_error($line, $index) {
     return spacing_error($index,
-                         "extra newline error",
+                         "spacing error",
                          "line {$index}: extra new line inside a rule set",
+                         $line);
+  }
+
+  /**
+   * Constructs an extra new line error message
+   * @param  [string] $line - the line of code where the error is detected
+   * @param  [int] $index - the line number
+   * @return [array] - an associative array describing the extra new line error
+   */
+  function extra_newline_between_sets_error($line, $index) {
+    return spacing_error($index,
+                         "spacing error",
+                         "line {$index}: extra new line between rule sets",
+                         $line);
+  }
+
+  /**
+   * Constructs an extra new line error message
+   * @param  [string] $line - the line of code where the error is detected
+   * @param  [int] $index - the line number
+   * @return [array] - an associative array describing the extra new line error
+   */
+  function rule_set_close_error($line, $index) {
+    return spacing_error($index,
+                         "spacing error",
+                         "line {$index}: leading space before end bracket or"
+                         ." extra content after end bracket",
                          $line);
   }
 
