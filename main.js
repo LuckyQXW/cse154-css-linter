@@ -10,6 +10,9 @@
   window.addEventListener("load", init);
   const BASE_URL = "linter.php";
 
+  /**
+   * Initializes the CSS lint and attaches action to the interface
+   */
   function init() {
     id("submit").addEventListener("click", submit);
     id("editor").addEventListener("change", refreshButton);
@@ -22,13 +25,17 @@
    */
   function submit(e) {
     e.preventDefault();
-    let data = new FormData();
-    data.append("code", id("editor").value);
-    fetch(BASE_URL, {method: "POST", body: data})
-      .then(checkStatus)
-      .then(JSON.parse)
-      .then(handleOutput)
-      .catch(console.error);
+    if(id("editor").value === "") {
+      id("editor").placeholder = "Please copy and paste your FULL CSS code in here first!";
+    } else {
+      let data = new FormData();
+      data.append("code", id("editor").value);
+      fetch(BASE_URL, {method: "POST", body: data})
+        .then(checkStatus)
+        .then(JSON.parse)
+        .then(handleOutput)
+        .catch(console.error);
+    }
   }
 
   /**
@@ -70,6 +77,7 @@
     output.appendChild(outputText);
     id("output-area").appendChild(output);
   }
+
   /**
    * Gets a random CSS tip from the server
    */

@@ -8,7 +8,7 @@
 @import url('https://fonts.googleapis.com/css?family=IBM+Plex+Sans:700|Open+Sans:400,600,700');
 
 /*
- * Used button style from course website
+ * Use button style from course website
  */
 button {
   margin: 6px 0px 15px 20px;
@@ -42,7 +42,7 @@ div {
 
 .msg, .pass {
   width: 100%;
-  height: 50px;
+  height: 20px;
 }
 
 body, button, div {
