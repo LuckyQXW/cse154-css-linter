@@ -26,36 +26,67 @@
     data.append("code", id("editor").value);
     fetch(BASE_URL, {method: "POST", body: data})
       .then(checkStatus)
+      .then(JSON.parse)
       .then(handleOutput)
       .catch(console.error);
   }
 
   /**
    * Handles the response from the server after validating the code
-   * @param  {String} text - response from the server
+   * @param  {Object} json - json response from the server
    */
-  function handleOutput(text) {
+  function handleOutput(json) {
     id("output-area").innerHTML = "";
-    let output = document.createElement("pre");
-    output.textContent = text;
+    if(json["duplicates"].length || json["spacing-errors"].length) {
+      for(let i = 0; i < json["duplicates"].length; i++) {
+        let message = json["duplicates"][i]["message"]
+        + " (" + json["duplicates"][i]["content"] + ")";
+        appendOutput(message);
+      }
+      for(let i = 0; i < json["spacing-errors"].length; i++) {
+        let message = json["spacing-errors"][i]["message"]
+        + " (" + json["spacing-errors"][i]["content"] + ")";
+        appendOutput(message);
+      }
+    } else {
+      passValidation();
+    }
+  }
+
+  function appendOutput(message) {
+    let output = document.createElement("div");
+    output.classList.add("msg");
+    let outputText = document.createElement("p");
+    outputText.textContent = message;
+    output.appendChild(outputText);
     id("output-area").appendChild(output);
   }
 
+  function passValidation() {
+    let output = document.createElement("div");
+    output.classList.add("pass");
+    let outputText = document.createElement("p");
+    outputText.textContent = "Pass validation!";
+    output.appendChild(outputText);
+    id("output-area").appendChild(output);
+  }
   /**
    * Gets a random CSS tip from the server
    */
   function getTip() {
     fetch(BASE_URL + "?content=randomtips")
       .then(checkStatus)
+      .then(JSON.parse)
       .then(populateTip)
       .catch(console.error);
   }
 
   /**
    * Populates the css tips area with a random tip from the CSS Code Quality Guide
-   * @param  {String} text - the random CSS tip
+   * @param  {Object} json - the json object containing the random CSS tip
    */
-  function populateTip(text) {
+  function populateTip(json) {
+    let text = json.tip;
     let tip = document.createElement("p");
     qs("#random-tips-area p").textContent = text;
   }
