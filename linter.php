@@ -1,6 +1,14 @@
 <?php
   header("Content-type: application/json");
 
+  // Defines the regex patterns used for validation
+  const SELECTOR = "/( )*(.)+( )*{/";
+  const RULE_SET_CLOSE = "/( )*}/";
+  const RULE = "/( )*(.)+:( )*(.)*/";
+  const SELECTOR_STRICT = "/([a-zA-Z])+ {/";
+  const COLON_SPACE_AFTER = "/: (?! )/";
+  const NO_COLON_SPACE_BEFORE = "/([a-zA-Z]):/";
+
   if(isset($_GET["content"])) {
     if($_GET["content"] === "randomtips") {
       get_random_tips();
@@ -11,14 +19,6 @@
     header("HTTP/1.1 400 Invalid Request");
     echo "Missing required name parameter!";
   }
-  
-  // Defines the regex patterns used for validation
-  const SELECTOR = "/( )*(.)+( )*{/";
-  const RULE_SET_CLOSE = "/( )*}/";
-  const RULE = "/( )*(.)+:( )*(.)*/";
-  const SELECTOR_STRICT = "/([a-zA-Z])+ {/";
-  const COLON_SPACE_AFTER = "/: (?! )/";
-  const NO_COLON_SPACE_BEFORE = "/([a-zA-Z]):/";
 
   /**
    * Gets a random tip from the CSS Code Quality Guide
