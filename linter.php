@@ -1,3 +1,4 @@
+<?php
 /*
   Name: Wen Qiu
   Date: May 17, 2019
@@ -29,7 +30,6 @@
     file and return the validation result as JSON.
   - Else outputs 400 error message as plain text.
  */
-<?php
   // Defines the regex patterns used for validation
   const SELECTOR = "/(\S)+( )*{/";
   const RULE_SET_CLOSE = "/( )*}/";

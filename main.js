@@ -17,6 +17,7 @@
     id("submit").addEventListener("click", submit);
     id("get-tip").addEventListener("click", getTip);
     id("hide-warning").addEventListener("click", hideWarning);
+    id("get-full-guide").addEventListener("click", getFullGuide);
   }
 
   /**
@@ -89,11 +90,11 @@
    * Gets a random CSS tip from the server
    */
   function getTip() {
-    fetch(BASE_URL + "?tips=all")
+    fetch(BASE_URL + "?tips=random")
       .then(checkStatus)
       .then(JSON.parse)
       .then(populateTip)
-      .catch(console.error);
+      .catch(displayError);
   }
 
   /**
@@ -106,8 +107,45 @@
     qs("#random-tips-area p").textContent = text;
   }
 
+  /**
+   * Hides the warning
+   */
   function hideWarning() {
     id("disclaimer").classList.add("hidden");
+  }
+
+  /**
+   * Gets the full CSS Code Quality Guide and displays it as an output
+   */
+  function getFullGuide() {
+    fetch(BASE_URL + "?tips=all&mode=text")
+      .then(checkStatus)
+      .then(displayFullGuide)
+      .catch(displayError)
+  }
+
+  /**
+   * Displays the full CSS Code Quality Guide in the output area
+   * @param  {String} text - the CSS Code Quality Guide in plain text
+   */
+  function displayFullGuide(text) {
+    id("output-area").innerHTML = "";
+    let lines = text.split("\n");
+    let guide = document.createElement("div");
+    for(let i = 0; i < lines.length; i++) {
+      let guideText = document.createElement("p");
+      guideText.textContent = lines[i];
+      guide.appendChild(guideText);
+    }
+    id("output-area").appendChild(guide);
+  }
+
+  /**
+   * Displays an error message when the server is down or internet connection is broken
+   */
+  function displayError() {
+    id("output-area").innerHTML = "";
+    appendOutput("Oops, something is wrong with the server or your internet!");
   }
 
   /**
