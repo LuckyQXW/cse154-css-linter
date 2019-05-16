@@ -64,10 +64,12 @@ If missing the `random`, it will 400 error with a message `Please request either
 
 **Example Request:** linter.php endpoint with POST parameters of
 `code`=
+```
 h2  {
   margin-bottom: 0;
   margin-bottom: 0;
 }
+```
 
 **Example Response:**
 ```json

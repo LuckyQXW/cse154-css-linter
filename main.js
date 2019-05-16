@@ -35,7 +35,7 @@
         .then(checkStatus)
         .then(JSON.parse)
         .then(handleOutput)
-        .catch(console.error);
+        .catch(displayError);
     }
   }
 
@@ -103,7 +103,6 @@
    */
   function populateTip(json) {
     let text = json.tip;
-    let tip = document.createElement("p");
     qs("#random-tips-area p").textContent = text;
   }
 
@@ -121,7 +120,7 @@
     fetch(BASE_URL + "?tips=all&mode=text")
       .then(checkStatus)
       .then(displayFullGuide)
-      .catch(displayError)
+      .catch(displayError);
   }
 
   /**
