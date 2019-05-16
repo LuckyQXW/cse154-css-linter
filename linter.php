@@ -1,3 +1,34 @@
+/*
+  Name: Wen Qiu
+  Date: May 17, 2019
+  Section : CSE 154 AJ
+
+  This file provides back-end support for the CSSLinter API.
+  Based on the input parameters supplied using GET requests,
+  the API outputs different details about puppies in different formats.
+
+  Web Service details:
+  =====================================================================
+  Required GET parameter:
+  - tips
+  Optional GET parameter:
+  - mode
+  Required POST parameter:
+  - code
+  Output formats:
+  - Plain text and JSON
+  Output Details:
+  - If the tips parameter is passed and set to "random", the API
+    will return a random tip from the CSS Code Quality Guide as JSON.
+  - If the tips parameter is passed and set to "all", the API
+    will return all tips from the CSS Code Quality Guide as JSON.
+  - If the tips parameter is passed and set to "all", and the "mode"
+    parameter is passed and set to "text", the API will return all tips from
+    the CSS Code Quality Guide as plain text.
+  - If the code parameter is passed, the API will validate its value as a CSS
+    file and return the validation result as JSON.
+  - Else outputs 400 error message as plain text.
+ */
 <?php
   // Defines the regex patterns used for validation
   const SELECTOR = "/(\S)+( )*{/";
