@@ -27,13 +27,16 @@ div {
   margin-right: auto;
 }
 
+pre {
+  font-size: 12pt;
+}
+
 #disclaimer {
   background-color: red;
 }
 
 #output-area {
   text-align: left;
-  width: 50%;
 }
 
 #random-tips-area {

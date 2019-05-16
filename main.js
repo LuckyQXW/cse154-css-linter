@@ -45,15 +45,15 @@
    */
   function handleOutput(json) {
     id("output-area").innerHTML = "";
-    if(json["duplicates"].length || json["spacing-errors"].length) {
+    if(json["duplicates"].length || json["format-errors"].length) {
       for(let i = 0; i < json["duplicates"].length; i++) {
         let message = json["duplicates"][i]["message"]
         + " (" + json["duplicates"][i]["content"] + ")";
         appendOutput(message);
       }
-      for(let i = 0; i < json["spacing-errors"].length; i++) {
-        let message = json["spacing-errors"][i]["message"]
-        + " (" + json["spacing-errors"][i]["content"] + ")";
+      for(let i = 0; i < json["format-errors"].length; i++) {
+        let message = json["format-errors"][i]["message"]
+        + " (" + json["format-errors"][i]["content"] + ")";
         appendOutput(message);
       }
     } else {
