@@ -1,24 +1,60 @@
 <?php
-  header("Content-type: application/json");
-
   // Defines the regex patterns used for validation
   const SELECTOR = "/(\S)+( )*{/";
   const RULE_SET_CLOSE = "/( )*}/";
   const RULE = "/( )*(\S)+:( )*(\S)*/";
   const SELECTOR_STRICT = "/^\S+((\S {1}\S)*(\S))* {/";
-  const RULE_SPACING = "/^ {2}(\S)+(?<! ): (?! )(.)+/";
+  const RULE_SPACING = "/^ {2}(\S)+: (\S)(.)+/";
   const END_WITH_SEMICOLON = "/(?<!;);( )*(?!.)/";
   const RULE_SET_CLOSE_STRICT = "/^}( )*$/";
 
-  if(isset($_GET["content"])) {
-    if($_GET["content"] === "randomtips") {
-      get_random_tips();
+  if(isset($_GET["tips"]) && $_GET["tips"] === "random") {
+    header("Content-type: application/json");
+    get_random_tip();
+  } else if(isset($_GET["tips"]) && $_GET["tips"] === "all") {
+    if($_GET["mode"] === "text") {
+      header("Content-type: application/json");
+      get_all_tips(true);
+    } else {
+      header("Content-type: text/plain");
+      get_all_tips();
     }
   } else if(isset($_POST["code"])) {
+    header("Content-type: application/json");
     validate($_POST["code"]);
   } else {
     header("HTTP/1.1 400 Invalid Request");
-    echo "Missing required name parameter!";
+    echo "Missing required tips parameter!";
+  }
+
+  /**
+   * Gets all the tips from the CSS Code Quality Guide
+   * Content copied from
+   * https://courses.cs.washington.edu/courses/cse154/codequalityguide/_site/css/
+   * @param  [boolean] $text - indicates whether the tips should be returned in
+   *                           plain text
+   */
+  function get_all_tips($text = false) {
+    $file = "resources/cssguide.txt";
+    $all_tips = array();
+    if(file_exists($file)){
+      $content = file_get_contents($file) or die("ERROR: Cannot open the file.");
+      if($text) {
+        echo $content;
+      } else {
+        $tips = explode("\n", $content);
+        // Handles the extra empty element in the array added during parsing
+        array_pop($tips);
+        for($i = 0; $i < count($tips); $i++) {
+          $result = array();
+          $result["tip"] = $tips[$i];
+          array_push($all_tips, $result);
+        }
+        echo json_encode($all_tips);
+      }
+    } else{
+      echo "ERROR: File does not exist.";
+    }
   }
 
   /**
@@ -26,7 +62,7 @@
    * Content copied from
    * https://courses.cs.washington.edu/courses/cse154/codequalityguide/_site/css/
    */
-  function get_random_tips() {
+  function get_random_tip() {
     $file = "resources/cssguide.txt";
     if(file_exists($file)){
       $content = file_get_contents($file) or die("ERROR: Cannot open the file.");
@@ -164,7 +200,7 @@
   }
 
   /**
-   * Constructs an extra new line error message
+   * Constructs an extra new line between rule sets error message
    * @param  [string] $line - the line of code where the error is detected
    * @param  [int] $index - the line number
    * @return [array] - an associative array describing the extra new line error
@@ -177,10 +213,10 @@
   }
 
   /**
-   * Constructs an extra new line error message
+   * Constructs a rule set close error message
    * @param  [string] $line - the line of code where the error is detected
    * @param  [int] $index - the line number
-   * @return [array] - an associative array describing the extra new line error
+   * @return [array] - an associative array describing rule set close error
    */
   function rule_set_close_error($line, $index) {
     return spacing_error($index,

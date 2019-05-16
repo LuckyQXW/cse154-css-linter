@@ -15,8 +15,8 @@
    */
   function init() {
     id("submit").addEventListener("click", submit);
-    id("editor").addEventListener("change", refreshButton);
     id("get-tip").addEventListener("click", getTip);
+    id("hide-warning").addEventListener("click", hideWarning);
   }
 
   /**
@@ -60,19 +60,26 @@
     }
   }
 
+  /**
+   * Appends an output message to the output area
+   * @param  {String} message - the message to be displayed
+   */
   function appendOutput(message) {
     let output = document.createElement("div");
     output.classList.add("msg");
-    let outputText = document.createElement("p");
+    let outputText = document.createElement("pre");
     outputText.textContent = message;
     output.appendChild(outputText);
     id("output-area").appendChild(output);
   }
 
+  /**
+   * Shows the CSS code has passed the validation in the output area
+   */
   function passValidation() {
     let output = document.createElement("div");
     output.classList.add("pass");
-    let outputText = document.createElement("p");
+    let outputText = document.createElement("pre");
     outputText.textContent = "Pass validation!";
     output.appendChild(outputText);
     id("output-area").appendChild(output);
@@ -82,7 +89,7 @@
    * Gets a random CSS tip from the server
    */
   function getTip() {
-    fetch(BASE_URL + "?content=randomtips")
+    fetch(BASE_URL + "?tips=all")
       .then(checkStatus)
       .then(JSON.parse)
       .then(populateTip)
@@ -99,11 +106,8 @@
     qs("#random-tips-area p").textContent = text;
   }
 
-  /**
-   * Enables the button if the editor is not empty, disables it otherwise
-   */
-  function refreshButton() {
-    id("submit").disabled = !this.value;
+  function hideWarning() {
+    id("disclaimer").classList.add("hidden");
   }
 
   /**
