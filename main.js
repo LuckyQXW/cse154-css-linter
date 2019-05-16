@@ -142,7 +142,7 @@
   /**
    * Displays an error message when the server is down or internet connection is broken
    */
-  function displayError() {
+  function displayError(text) {
     id("output-area").innerHTML = "";
     appendOutput("Oops, something is wrong with the server or your internet!");
   }
