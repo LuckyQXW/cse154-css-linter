@@ -30,10 +30,12 @@
     file and return the validation result as JSON.
   - Else outputs 400 error message as plain text.
  */
+ header("Content-type: application/json");
+
   // Defines the regex patterns used for validation
   const SELECTOR = "/(\S)+( )*{/";
   const RULE_SET_CLOSE = "/( )*}/";
-  const RULE = "/( )*(\S)+:( )*(\S)*/";
+  const RULE = "/(.)+:( )*(\S)*/";
   const SELECTOR_STRICT = "/^\S+((\S {1}\S)*(\S))* {/";
   const RULE_SPACING = "/^ {2}(\S)+: (\S)(.)+/";
   const END_WITH_SEMICOLON = "/(?<!;);( )*(?!.)/";
@@ -41,7 +43,6 @@
 
   if(isset($_GET["tips"])) {
     if($_GET["tips"] === "random") {
-      header("Content-type: application/json");
       get_random_tip();
     } else if($_GET["tips"] === "all") {
       header("Content-type: text/plain");
@@ -52,7 +53,6 @@
     }
   } else if(isset($_POST["code"])) {
     if($_POST["code"] !== "") {
-      header("Content-type: application/json");
       validate($_POST["code"]);
     } else {
       header("HTTP/1.1 400 Invalid Request");
@@ -60,7 +60,7 @@
     }
   } else {
     header("HTTP/1.1 400 Invalid Request");
-    echo "Missing required tips parameter!";
+    echo "Missing required parameters! Refer to API for available requests.";
   }
 
   /**
@@ -148,9 +148,9 @@
         if(!preg_match(RULE_SET_CLOSE_STRICT, $lines[$i])) {
           array_push($format_error, rule_set_close_error($lines[$i], $i));
         }
-        if($i < count($lines) - 1 && $lines[$i + 1] != "") {
+        if($i < count($lines) - 1 && $lines[$i + 1] !== "") {
           array_push($format_error, missing_newline_error($lines[$i], $i));
-        } else if($i < count($lines) - 2 && $lines[$i + 2] == "") {
+        } else if($i < count($lines) - 2 && $lines[$i + 2] === "") {
           array_push($format_error, extra_newline_between_sets_error($lines[$i], $i));
         }
       }
