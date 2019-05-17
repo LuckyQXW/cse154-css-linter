@@ -26,7 +26,7 @@
    */
   function submit(e) {
     e.preventDefault();
-    if(id("editor").value === "") {
+    if (id("editor").value === "") {
       id("editor").placeholder = "Please copy and paste your FULL CSS code in here first!";
     } else {
       let data = new FormData();
@@ -45,13 +45,13 @@
    */
   function handleOutput(json) {
     id("output-area").innerHTML = "";
-    if(json["duplicates"].length || json["format-errors"].length) {
-      for(let i = 0; i < json["duplicates"].length; i++) {
+    if (json["duplicates"].length || json["format-errors"].length) {
+      for (let i = 0; i < json["duplicates"].length; i++) {
         let message = json["duplicates"][i]["message"]
         + " (" + json["duplicates"][i]["content"] + ")";
         appendOutput(message);
       }
-      for(let i = 0; i < json["format-errors"].length; i++) {
+      for (let i = 0; i < json["format-errors"].length; i++) {
         let message = json["format-errors"][i]["message"]
         + " (" + json["format-errors"][i]["content"] + ")";
         appendOutput(message);
@@ -131,7 +131,7 @@
     id("output-area").innerHTML = "";
     let lines = text.split("\n");
     let guide = document.createElement("div");
-    for(let i = 0; i < lines.length; i++) {
+    for (let i = 0; i < lines.length; i++) {
       let guideText = document.createElement("p");
       guideText.textContent = lines[i];
       guide.appendChild(guideText);
@@ -142,7 +142,7 @@
   /**
    * Displays an error message when the server is down or internet connection is broken
    */
-  function displayError(text) {
+  function displayError() {
     id("output-area").innerHTML = "";
     appendOutput("Oops, something is wrong with the server or your internet!");
   }

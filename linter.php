@@ -26,7 +26,6 @@
     file and return the validation result as JSON.
   - Else outputs 400 error message as plain text.
  */
- header("Content-type: application/json");
 
   // Defines the regex patterns used for validation, constructed using Rubular
   // https://rubular.com/
@@ -38,27 +37,28 @@
   const END_WITH_SEMICOLON = "/(?<!;);( )*(?!.)/";
   const RULE_SET_CLOSE_STRICT = "/^}( )*$/";
 
-  if(isset($_GET["tips"])) {
+  if (isset($_GET["tips"])) {
     handle_get_requests();
-  } else if(isset($_POST["code"])) {
+  } else if (isset($_POST["code"])) {
     handle_post_requests();
   } else {
     header("HTTP/1.1 400 Invalid Request");
-    echo "Missing required parameters! Refer to API for available requests.";
+    die("Missing required parameters! Refer to API for available requests.");
   }
 
   /**
    * Handles the GET requests, responds 400 error if passed in invalid parameters
    */
   function handle_get_requests() {
-    if($_GET["tips"] === "random") {
+    if ($_GET["tips"] === "random") {
+      header("Content-type: application/json");
       get_random_tip();
-    } else if($_GET["tips"] === "all") {
+    } else if ($_GET["tips"] === "all") {
       header("Content-type: text/plain");
       get_all_tips();
     } else {
       header("HTTP/1.1 400 Invalid Request");
-      echo "Please request either a random tip or all the tips!";
+      die("Please request either a random tip or all the tips!");
     }
   }
 
@@ -66,11 +66,12 @@
    * Handles the POST requests, responds 400 error if passed in invalid parameters
    */
   function handle_post_requests() {
-    if($_POST["code"] !== "") {
+    if ($_POST["code"]) {
+      header("Content-type: application/json");
       validate($_POST["code"]);
     } else {
       header("HTTP/1.1 400 Invalid Request");
-      echo "Please send nonempty code for validation!";
+      die("Please send nonempty code for validation!");
     }
   }
 
@@ -82,11 +83,11 @@
   function get_all_tips() {
     $file = "resources/cssguide.txt";
     $all_tips = array();
-    if(file_exists($file)){
+    if (file_exists($file)) {
       $content = file_get_contents($file) or die("ERROR: Cannot open the file.");
       echo $content;
     } else{
-      echo "ERROR: File does not exist.";
+      die("ERROR: File does not exist.");
     }
   }
 
@@ -97,7 +98,7 @@
    */
   function get_random_tip() {
     $file = "resources/cssguide.txt";
-    if(file_exists($file)){
+    if (file_exists($file)) {
       $content = file_get_contents($file) or die("ERROR: Cannot open the file.");
       $tips = explode("\n", $content);
       // Handles the extra empty element in the array added during parsing
@@ -106,8 +107,8 @@
       $result = array();
       $result["tip"] = $tips[$index];
       echo json_encode($result);
-    } else{
-      echo "ERROR: File does not exist.";
+    } else {
+      die("ERROR: File does not exist.");
     }
   }
 
@@ -134,23 +135,23 @@
   function check_format_errors($lines) {
     $format_error = array();
     $start_of_css = false;
-    for($i = 0; $i < count($lines); $i++) {
-      if(preg_match_all(SELECTOR, $lines[$i])) {
+    for ($i = 0; $i < count($lines); $i++) {
+      if (preg_match(SELECTOR, $lines[$i])) {
         $start_of_css = true;
         check_selector($format_error, $i, $lines[$i]);
-        if($lines[$i + 1] === "") {
+        if (!$lines[$i + 1]) {
           array_push($format_error, extra_newline_error($lines[$i], $i));
         }
-      } else if($start_of_css && preg_match_all(RULE, $lines[$i])) {
+      } else if ($start_of_css && preg_match(RULE, $lines[$i])) {
         check_rule($format_error, $i, $lines[$i]);
-        if($lines[$i + 1] === "") {
+        if(!$lines[$i + 1]) {
           array_push($format_error, extra_newline_error($lines[$i], $i));
         }
-      } else if(preg_match_all(RULE_SET_CLOSE, $lines[$i])) {
+      } else if (preg_match(RULE_SET_CLOSE, $lines[$i])) {
         check_rule_set_close($format_error, $i, $lines[$i]);
-        if($i < count($lines) - 1 && $lines[$i + 1] !== "") {
+        if($i < count($lines) - 1 && $lines[$i + 1]) {
           array_push($format_error, missing_newline_error($lines[$i], $i));
-        } else if($i < count($lines) - 2 && $lines[$i + 2] === "") {
+        } else if ($i < count($lines) - 2 && !$lines[$i + 2]) {
           array_push($format_error, extra_newline_between_sets_error($lines[$i], $i));
         }
       }
@@ -168,7 +169,7 @@
    *                          loose format for the selector
    */
   function check_selector(&$format_error, $index, $line) {
-    if(!preg_match_all(SELECTOR_STRICT, $line)) {
+    if (!preg_match(SELECTOR_STRICT, $line)) {
       array_push($format_error, selector_spacing_error($line, $index));
     }
   }
@@ -183,10 +184,10 @@
    *                          loose format for a CSS rule
    */
   function check_rule(&$format_error, $index, $line) {
-    if(!preg_match_all(RULE_SPACING, $line)) {
+    if (!preg_match(RULE_SPACING, $line)) {
       array_push($format_error, rule_spacing_error($line, $index));
     }
-    if(!(preg_match_all(END_WITH_SEMICOLON, $line))) {
+    if (!(preg_match(END_WITH_SEMICOLON, $line))) {
       array_push($format_error, semicolon_error($line, $index));
     }
   }
@@ -201,7 +202,7 @@
    *                          loose format for the closing bracket of a CSS rule set
    */
   function check_rule_set_close(&$format_error, $index, $line) {
-    if(!preg_match(RULE_SET_CLOSE_STRICT, $line)) {
+    if (!preg_match(RULE_SET_CLOSE_STRICT, $line)) {
       array_push($format_error, rule_set_close_error($line, $index));
     }
   }
@@ -238,8 +239,8 @@
    */
   function semicolon_error($line, $index) {
     return format_error($index,
-                         "line {$index}: rule does not end with semicolon",
-                         $line);
+                        "line {$index}: rule does not end with semicolon",
+                        $line);
   }
 
   /**
@@ -316,9 +317,9 @@
   function check_duplicates($lines) {
     $duplicates = array();
     $rule = "/(.)+: (.)+;/";
-    for($i = 0; $i < count($lines); $i++) {
-      for($j = $i + 1; $j < count($lines); $j++) {
-        if(preg_match_all($rule, $lines[$i]) && trim($lines[$i]) === trim($lines[$j])) {
+    for ($i = 0; $i < count($lines); $i++) {
+      for ($j = $i + 1; $j < count($lines); $j++) {
+        if (preg_match_all($rule, $lines[$i]) && trim($lines[$i]) === trim($lines[$j])) {
           $match_msg = array();
           $match1 = $i + 1;
           $match2 = $j + 1;
