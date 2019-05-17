@@ -42,8 +42,7 @@
   } else if (isset($_POST["code"])) {
     handle_post_requests();
   } else {
-    header("HTTP/1.1 400 Invalid Request");
-    die("Missing required parameters! Refer to API for available requests.");
+    print_errors("Missing required parameters! Refer to API for available requests.");
   }
 
   /**
@@ -57,9 +56,18 @@
       header("Content-type: text/plain");
       get_all_tips();
     } else {
-      header("HTTP/1.1 400 Invalid Request");
-      die("Please request either a random tip or all the tips!");
+      print_errors("Please request either a random tip or all the tips!");
     }
+  }
+
+  /**
+   * Responds 400 error and returns a message in plain text
+   * @param  [string] $msg - the message to be displayed as error
+   */
+  function print_errors($msg) {
+    header("HTTP/1.1 400 Invalid Request");
+    header("Content-type: text/plain");
+    echo $msg;
   }
 
   /**
@@ -70,8 +78,7 @@
       header("Content-type: application/json");
       validate($_POST["code"]);
     } else {
-      header("HTTP/1.1 400 Invalid Request");
-      die("Please send nonempty code for validation!");
+      print_errors("Please send nonempty code for validation!");
     }
   }
 
