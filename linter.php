@@ -32,10 +32,10 @@
   const SELECTOR = "/(\S)+( )*{/";
   const RULE_SET_CLOSE = "/( )*}/";
   const RULE = "/(.)+:( )*(\S)*/";
-  const SELECTOR_STRICT = "/^\S+((\S {1}\S)*(\S))* {/";
+  const SELECTOR_STRICT = "/^\S+( (\S)+)* {( )*((\/\*(.)*\*\/)*|(\/\/(.)*))$/";
   const RULE_SPACING = "/^ {2}(\S)+: (\S)(.)+/";
-  const END_WITH_SEMICOLON = "/(?<!;);( )*(?!.)/";
-  const RULE_SET_CLOSE_STRICT = "/^}( )*$/";
+  const END_WITH_SEMICOLON = "/(?<!;);( )*((\/\*(.)*\*\/)*|(\/\/(.)*))$/";
+  const RULE_SET_CLOSE_STRICT = "/^}( )*((\/\*(.)*\*\/)*|(\/\/(.)*))$/";
 
   if (isset($_GET["tips"])) {
     handle_get_requests();
