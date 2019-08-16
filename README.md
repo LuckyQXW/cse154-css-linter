@@ -12,7 +12,9 @@ The code validation was the tricky part. I decided to use a POST request to hand
 In the interest of time, I decided to read the code line by line and by matching a loose regex, I can separate each line into three categories: selector, the rules, and the closing bracket for a rule set. For example: 
 
 h1 {                    -> selector (text + some space + {)
+
   text-align: center;   -> rule (text + : + text)
+  
 }                       -> rule set close (just a closing bracket)
 
 To identify the correct regex, I use [Rubular](https://rubular.com/) to try out different combinations and get the best match as possible. It was a lot of trial and error, but once I got used to the regex syntax, it got easier to assemble the correct pattern. 
