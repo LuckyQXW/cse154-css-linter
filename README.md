@@ -1,3 +1,26 @@
+# CSE 154 CSS Linter
+## Motivation
+The goal of this project is to create a PHP web service and practice using AJAX and fetch. During one office hour I learned about regex and its cool use cases, specifically checking formatting for texts. Since for CSE 154 there is a pretty strict CSS style guide and CSS syntax is relatively simple, I decided to utilize the regex knowledge to build a CSS linter for the class. 
+
+## Process
+For this project, I mostly focused on the functional aspect for the web service, so I didn't put too much effort in designing the UI but rather keep it really basic. 
+I first worked on the GET request requirement for the assignment. One request simply returns a random tip from the CSS style guide in a JSON, and the other returns the whole guide in plain text. With MAMP, I was able to turn my computer into a local server and retrived data via PHP using relative path. 
+The code validation was the tricky part. I decided to use a POST request to handle the validation because POST requests (1) can send more data via a FormData object (2) is more secure in the sense that the parameters do not show up in the URL. Then it was a matter of figuring out the right way to parse the code. 
+In the interest of time, I decided to read the code line by line and by matching a loose regex, I can separate each line into three categories: selector, the rules, and the closing bracket for a rule set. For example: 
+h1 {                    -> selector (text + some space + {)
+  text-align: center;   -> rule (text + : + text)
+}                       -> rule set close (just a closing bracket)
+To identify the correct regex, I use [Rubular](https://rubular.com/) to try out different combinations and get the best match as possible. It was a lot of trial and error, but once I got used to the regex syntax, it got easier to assemble the correct pattern. 
+After using the loose regex to categorize the lines, I also assembled a strict regex to validate the code syntax. I had to admit that I made some assumptions and it would be easy to break them after knowing what the regex is, but I tried my best to capture the most common errors with those strict regex. 
+One issue I encountered as I was implementing the check_format_errors function was that it got very huge with the if checks. I learned that PHP functions pass arrays as copies by default rather than a reference to the array, so if I refactored the array_push part into individual functions, it wouldn't actually push to the array I wanted. With the help of TAs, I found that I could force it to pass reference by adding a & symbol in front of the argument in the function definition, and I was able to make the check_format_errors function much cleaner in the end. 
+To test the accuracy of the validation, I first put my own CSS files from past projects through it and see if it can capture all the errors or mistakenly report certain lines as errors. Then I put in the provided CSS files from some class projects and it helped me to catch things like inline comments, which I managed to ignore by fixing the regex. But of course, the regex I used will always have room for improvement, and reading code line by line is probably not the best way to check the syntax either. 
+In the end I also added a disclaimer that pops up when the page is first loaded and used red to attract attention. Users can close the disclaimer via a button because it could be tiring to stare at the red banner for a long time, affecting the user experience. 
+
+## Takeaway
++ It is important to prioritize and have a clear goal in mind for a project (functional vs. focus on UI)
++ Utilize online tools to help with regex assembly
++ Try various text cases, especially the ones provided by others, because I can't always find all the edge cases by myself
+
 # Creative Project 4 Project Specification
 ## Overview
 For your fourth Creative Project, you will create your own PHP web service available for use
